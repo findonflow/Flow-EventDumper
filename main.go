@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"encoding/hex"
 	"fmt"
 	"log"
 	"os"
@@ -9,7 +10,6 @@ import (
 
 	badger "github.com/dgraph-io/badger/v2"
 	"github.com/dgraph-io/badger/v2/pb"
-	flow "github.com/onflow/flow-go/model/flow"
 	"github.com/sanity-io/litter"
 	"github.com/vmihailenco/msgpack"
 )
@@ -18,7 +18,7 @@ func main() {
 
 	//open badger database
 	//https://github.com/onflow/flow-go/blob/cb148785274451cf005bed04c4fa27f2f557dab9/storage/badger/operation/prefix.go#L92
-	db, err := badger.Open(badger.DefaultOptions("../../mainnet1"))
+	db, err := badger.Open(badger.DefaultOptions("../../mainnet1").WithTruncate(true))
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -29,8 +29,8 @@ func main() {
 
 	// -- Optional settings
 	stream.NumGo = 32 // Set number of goroutines to use for iteration.
-	//stream.Prefix = []byte{0x66} //tx        //events  0x66
-	stream.Prefix = []byte{0x22} //tx        //events  0x66
+	//stream.Prefix = []byte{0x66} //tx        //events
+	stream.Prefix = []byte{0x22} //tx        //transaction
 	//stream.Prefix = []byte{0x68}        //txResult
 	stream.LogPrefix = "Find.Streaming" // For identifying stream logs. Outputs to Logger.
 	stream.KeyToList = nil
@@ -45,9 +45,9 @@ func main() {
 			}
 			//k key
 
-			//			k := kv.GetKey()
-			//			fmt.Println(len(k))
-			//fmt.Println(hex.EncodeToString(k))
+			k := kv.GetKey()
+			//fmt.Println(len(k))
+			fmt.Println(hex.EncodeToString(k))
 
 			/*
 				blockID := hex.EncodeToString(k[1:33])
@@ -69,8 +69,9 @@ func main() {
 			*/
 			//		os.Exit(0)
 			//v value
+			//
 			v := kv.GetValue()
-			var event flow.Transaction
+			var event interface{}
 			err = msgpack.Unmarshal(v, &event)
 			if err != nil {
 				return fmt.Errorf("could not decode the event: %w", err)
