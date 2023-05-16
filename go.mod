@@ -1,13 +1,11 @@
-module github.com/bluesign/eventDumper
+module github.com/findonfloe/Flow-EventDumper
 
 go 1.18
 
 require (
-	github.com/Jeffail/gabs v1.4.0
-	github.com/dgraph-io/badger v1.6.1
 	github.com/dgraph-io/badger/v2 v2.0.3
-	github.com/mattn/go-sqlite3 v1.14.14
 	github.com/onflow/flow-go v0.10.1
+	github.com/sanity-io/litter v1.5.5
 	github.com/vmihailenco/msgpack v4.0.4+incompatible
 )
 
